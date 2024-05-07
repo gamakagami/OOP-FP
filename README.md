@@ -6,14 +6,14 @@ Class: L2AC<br>
 
 **Contents:**
 <details>
-  Snake and ladder:
+  <Summary>Snake and ladder:</Summary>
 </details>
 <details>
-  Connect 4:
+ <Summary> Connect 4:</Summary>
 </details>
 <details>
-  Blackjack:
+ <Summary> Blackjack:</Summary>
 </details>
 <details>
-  Tictactoe:
+ <Summary> Tictactoe:</Summary>
 </details>
