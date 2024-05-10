@@ -31,10 +31,10 @@ public class Main {
                 plays +=1;
                 switch (dice) {
                     case 0:
-                        System.out.println("You got Snake and ladders!");
-                        Snake snake = new Snake();
-                        // Implement game 1 logic2
-
+                        System.out.println("You got Nim!");
+                        Nim nim = new Nim();
+                        nim.startGame(choice);
+                        result = nim.getResult();
                         break;
                     case 1:
                         System.out.println("You got Connect 4!");
@@ -54,20 +54,39 @@ public class Main {
                         NumberGame numberGame = new NumberGame();
                         if (choice == 1) {
                             numberGame.playTwoPlayers(new Random(), new Scanner(System.in));
+                            result = numberGame.getResult();
                         } else {
                             numberGame.playVsAI(new Random(), new Scanner(System.in));
+                            result = numberGame.getResult();
                         }
                         // Implement game 3 logic
                         break;
                 }
+                switch (choice){
+                    case 1:
+                        if (result == 2) {
+                            // p2 turn
+                            System.out.println("AI");
+                        } else if (result == 1) {
+                            // Player1 turn
+                            System.out.println("AsI");
+                        }
+                        break;
+                    case 2:
+                        if (result == 2) {
+                            // AI turn
+                            System.out.println("AI");
+                        } else if (result == 1) {
+                            // Player1 turn
+                            System.out.println("AsI");
+                        }
+
+
+                }
+
             }
-            if (result == 2) {
-                // AI turn
-                System.out.println("AI");
-            } else if (result == 1) {
-                // Player turn
-                System.out.println("AsI");
-            }
+
+
             // TTT
         }
         scanner.close();
