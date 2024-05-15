@@ -6,13 +6,13 @@ Class: L2AC<br>
 
 **Contents:**
 <details>
-  <Summary>Snake and ladder:</Summary>
+  <Summary> Nim:</Summary>
 </details>
 <details>
  <Summary> Connect 4:</Summary>
 </details>
 <details>
- <Summary> Blackjack:</Summary>
+ <Summary> Number Game:</Summary>
 </details>
 <details>
  <Summary> Tictactoe:</Summary>
