@@ -1,7 +1,6 @@
-import java.util.Scanner;
 import java.util.Random;
+import java.util.Scanner;
 
-// constants for the game board, empty spaces and players
 public class Connect4 {
     private static final int ROWS = 6;
     private static final int COLS = 7;
@@ -9,20 +8,16 @@ public class Connect4 {
     private static final char PLAYER1 = 'X';
     private static final char PLAYER2 = 'O';
 
-    // variables for game board and random generator
     private char[][] board;
     private Random random;
+    private int result = 0;
 
-    int result = 0;
-
-    // constructs and initializes the game board
     public Connect4() {
         board = new char[ROWS][COLS];
         random = new Random();
         initializeBoard();
     }
 
-    // initialize the board with empty character
     private void initializeBoard() {
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
@@ -31,7 +26,6 @@ public class Connect4 {
         }
     }
 
-    // prints the state of the board after every move
     private void printBoard() {
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j < COLS; j++) {
@@ -41,7 +35,6 @@ public class Connect4 {
         }
         System.out.println("---------------");
     }
-
 
     private boolean dropPiece(int col, char player) {
         if (col < 0 || col >= COLS) {
@@ -105,36 +98,40 @@ public class Connect4 {
             System.out.println("Player " + (player1Turn ? "1" : "2") + "'s turn (symbol: " + currentPlayer + ")");
 
             int col;
-            System.out.print("Enter column (0-" + (COLS - 1) + "): ");
-            col = scanner.nextInt();
-
-            if (dropPiece(col, currentPlayer)) {
-                printBoard();
-                if (checkWin(currentPlayer)) {
-                    if (player1Turn){
-                        System.out.println("Player 1 wins");
-                        result = 1;
-                    }else{
-                        System.out.println("Player 2 wins");
-                        result = 2;
+            while (true) {
+                System.out.print("Enter column (0-" + (COLS - 1) + "): ");
+                if (scanner.hasNextInt()) {
+                    col = scanner.nextInt();
+                    if (col >= 0 && col < COLS && dropPiece(col, currentPlayer)) {
+                        break;
+                    } else {
+                        System.out.println("Invalid input. Please enter a valid column number.");
                     }
-                    gameEnd = true;
-                } else if (isBoardFull()) {
-                    System.out.println("It's a draw!");
-                    gameEnd = true;
                 } else {
-                    player1Turn = !player1Turn;
+                    System.out.println("Invalid input. Please enter a valid column number.");
+                    scanner.next(); // Consume invalid input
                 }
             }
+
+            printBoard();
+
+            if (checkWin(currentPlayer)) {
+                System.out.println("Player " + (player1Turn ? "1" : "2") + " wins!");
+                result = (player1Turn) ? 1 : 2;
+                gameEnd = true;
+            } else if (isBoardFull()) {
+                System.out.println("It's a draw!");
+                gameEnd = true;
+            } else {
+                player1Turn = !player1Turn;
+            }
         }
-        scanner.close();
     }
 
     public void playGameAgainstAI() {
         Scanner scanner = new Scanner(System.in);
         boolean player1Turn = true;
         boolean gameEnd = false;
-
 
         System.out.println("Welcome to Connect 4 (Player vs AI)!");
         System.out.println("Player: X");
@@ -148,48 +145,53 @@ public class Connect4 {
 
             int col;
             if (player1Turn) {
-                System.out.print("Enter column (0-" + (COLS - 1) + "): ");
-                col = scanner.nextInt();
+                while (true) {
+                    System.out.print("Enter column (0-" + (COLS - 1) + "): ");
+                    if (scanner.hasNextInt()) {
+                        col = scanner.nextInt();
+                        if (col >= 0 && col < COLS && dropPiece(col, currentPlayer)) {
+                            break;
+                        } else {
+                            System.out.println("Invalid input. Please enter a valid column number.");
+                        }
+                    } else {
+                        System.out.println("Invalid input. Please enter a valid column number.");
+                        scanner.next(); // Consume invalid input
+                    }
+                }
             } else {
-                // AI chooses a column
                 col = random.nextInt(COLS);
-                System.out.println("AI chooses column: " + col);
+                while (!dropPiece(col, currentPlayer)) {
+                    col = random.nextInt(COLS);
+                }
+                System.out.println("AI chose column: " + col);
             }
 
-            if (dropPiece(col, currentPlayer)) {
-                printBoard();
-                if (checkWin(currentPlayer)) {
-                    if (player1Turn) {
-                        System.out.println("Player 1 wins!");
-                        result = 1;
-                    } else {
-                        System.out.println("AI wins!");
-                        result = 2;
-                    }
-                    gameEnd = true;
-                } else if (isBoardFull()) {
-                    System.out.println("It's a draw!");
-                    gameEnd = true;
-                } else {
-                    player1Turn = !player1Turn;
-                }
+            printBoard();
+
+            if (checkWin(currentPlayer)) {
+                System.out.println((player1Turn ? "Player" : "AI") + " wins!");
+                result = (player1Turn) ? 1 : 2;
+                gameEnd = true;
+            } else if (isBoardFull()) {
+                System.out.println("It's a draw!");
+                gameEnd = true;
+            } else {
+                player1Turn = !player1Turn;
             }
         }
-        scanner.close();
     }
 
     private boolean isBoardFull() {
-        for (int i = 0; i < ROWS; i++) {
-            for (int j = 0; j < COLS; j++) {
-                if (board[i][j] == EMPTY) {
-                    return false;
-                }
+        for (int i = 0; i < COLS; i++) {
+            if (board[0][i] == EMPTY) {
+                return false;
             }
         }
         return true;
     }
-    public int getResult(){
-        return result;
 
+    public int getResult() {
+        return result;
     }
 }
