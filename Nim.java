@@ -4,8 +4,7 @@ import java.util.Scanner;
 public class Nim {
     private int result; // Declare result as an instance variable
 
-    public void startGame(int choice) {
-        Scanner scanner = new Scanner(System.in);
+    public void startGame(int choice, Scanner scanner) {
         Random random = new Random();
 
         System.out.println("Welcome to Nim!");
@@ -71,22 +70,8 @@ public class Nim {
 
             player1Turn = !player1Turn;
         }
-
-        scanner.close();
     }
 
-    // Choose game mode
-    public static boolean chooseGameMode(Scanner scanner) {
-        System.out.println("Choose game mode:");
-        System.out.println("1. Player vs Player");
-        System.out.println("2. Player vs AI");
-        int choice;
-        do {
-            System.out.print("Enter your choice: ");
-            choice = scanner.nextInt();
-        } while (choice != 1 && choice != 2);
-        return choice == 2;
-    }
 
     // Check if the game is over
     public static boolean isGameOver(int[] heaps) {
