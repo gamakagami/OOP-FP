@@ -3,31 +3,6 @@ import java.util.Scanner;
 
 public class NumberGame {
     static int result = 0;
-    public static void main(String[] args) {
-        Random random = new Random();
-        Scanner scanner = new Scanner(System.in);
-
-        System.out.println("Welcome to the Number Game!");
-
-        // Ask the user to choose the game mode
-        System.out.println("Choose game mode:");
-        System.out.println("1. Two players");
-        System.out.println("2. Player vs AI");
-        int mode = scanner.nextInt();
-
-        if (mode == 1) {
-            playTwoPlayers(random, scanner);
-        } else if (mode == 2) {
-            playVsAI(random, scanner);
-        } else {
-            System.out.println("Invalid choice. Exiting...");
-        }
-
-        scanner.close();
-
-
-    }
-
     public static void playTwoPlayers(Random random, Scanner scanner) {
         int loop = 0;
         int pg1 = 0;
