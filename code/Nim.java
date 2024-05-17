@@ -1,8 +1,8 @@
+import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
-public class Nim {
-    private int result; // Declare result as an instance variable
+public class Nim extends Game {
 
     // Method to start the game
     public void startGame(int choice, Scanner scanner) {
@@ -11,7 +11,10 @@ public class Nim {
         System.out.println("Welcome to Nim!");
 
         // Set up initial state for each heap
-        int[] heaps = {random.nextInt(2)+3, random.nextInt(2)+4, random.nextInt(2)+5};
+        ArrayList<Integer> heaps = new ArrayList<>();
+        heaps.add(random.nextInt(2) + 3);
+        heaps.add(random.nextInt(2) + 4);
+        heaps.add(random.nextInt(2) + 5);
 
         // Main game loop
         boolean player1Turn = true; // Variable to track whose turn it is
@@ -19,8 +22,8 @@ public class Nim {
         while (true) {
             // Display current state of heaps
             System.out.println("\nCurrent State:");
-            for (int i = 0; i < heaps.length; i++) {
-                System.out.println("Heap " + (i + 1) + ": " + heaps[i] + " objects");
+            for (int i = 0; i < heaps.size(); i++) {
+                System.out.println("Heap " + (i + 1) + ": " + heaps.get(i) + " objects");
             }
 
             // Check if the game is over
@@ -51,21 +54,49 @@ public class Nim {
                 int heapIndex, objectsToRemove;
                 do {
                     System.out.println("\nPlayer " + (player1Turn ? "1" : "2") + "'s turn:");
-                    System.out.print("Enter the heap index (1-" + heaps.length + "): ");
+                    System.out.print("Enter the heap index (1-" + heaps.size() + "): ");
                     heapIndex = scanner.nextInt() - 1; // Adjust for zero-based index
-                    System.out.print("Enter the number of objects to remove (1-3): "); // Prompt for 1 to 3 objects
+                    if (heapIndex < 0 || heapIndex >= heaps.size()) {
+                        System.out.println("Invalid heap index. Please enter a number between 1 and " + heaps.size() + ".");
+                        // Display current state of heaps
+                        System.out.println("\nCurrent State:");
+                        for (int i = 0; i < heaps.size(); i++) {
+                            System.out.println("Heap " + (i + 1) + ": " + heaps.get(i) + " objects");
+                        }
+                        continue;
+                    }
+                    if (heaps.get(heapIndex) == 0) {
+                        System.out.println("Heap " + (heapIndex + 1) + " is empty. Please choose another heap.");
+                        // Display current state of heaps
+                        System.out.println("\nCurrent State:");
+                        for (int i = 0; i < heaps.size(); i++) {
+                            System.out.println("Heap " + (i + 1) + ": " + heaps.get(i) + " objects");
+                        }
+                        continue;
+                    }
+                    System.out.print("Enter the number of objects to remove (1-" + Math.min(heaps.get(heapIndex), 3) + "): ");
                     objectsToRemove = scanner.nextInt();
-                } while (!isValidMove(heaps, heapIndex, objectsToRemove) || objectsToRemove < 1 || objectsToRemove > 3); // Ensure the number is valid and within the range of 1 to 3
-                heaps[heapIndex] -= objectsToRemove;
+                    if (objectsToRemove < 1 || objectsToRemove > Math.min(heaps.get(heapIndex), 3)) {
+                        System.out.println("Invalid number of objects. Please enter a number between 1 and " + Math.min(heaps.get(heapIndex), 3) + ".");
+                        // Display current state of heaps
+                        System.out.println("\nCurrent State:");
+                        for (int i = 0; i < heaps.size(); i++) {
+                            System.out.println("Heap " + (i + 1) + ": " + heaps.get(i) + " objects");
+                        }
+                        continue;
+                    }
+                    break; // Break out of the loop if valid input is provided
+                } while (true); // Infinite loop until valid input is provided
+                heaps.set(heapIndex, heaps.get(heapIndex) - objectsToRemove);
             } else {
                 // AI's turn
                 int heapIndex, objectsToRemove;
                 do {
-                    heapIndex = random.nextInt(heaps.length);
-                } while (heaps[heapIndex] == 0); // Ensure selected heap is not empty
+                    heapIndex = random.nextInt(heaps.size());
+                } while (heaps.get(heapIndex) == 0); // Ensure selected heap is not empty
                 // AI randomly chooses a number of objects to remove (1-3 or the remaining objects in the heap)
-                objectsToRemove = random.nextInt(Math.min(3, heaps[heapIndex])) + 1;
-                heaps[heapIndex] -= objectsToRemove;
+                objectsToRemove = random.nextInt(Math.min(3, heaps.get(heapIndex))) + 1;
+                heaps.set(heapIndex, heaps.get(heapIndex) - objectsToRemove);
                 System.out.println("\nAI removes " + objectsToRemove + " objects from heap " + (heapIndex + 1));
             }
 
@@ -73,24 +104,13 @@ public class Nim {
         }
     }
 
-
     // Check if the game is over (all heaps are empty)
-    public static boolean isGameOver(int[] heaps) {
+    public static boolean isGameOver(ArrayList<Integer> heaps) {
         for (int heap : heaps) {
             if (heap > 0) {
                 return false; // Game is not over if any heap still has objects
             }
         }
         return true; // Game is over if all heaps are empty
-    }
-
-    // Check if a move is valid
-    public static boolean isValidMove(int[] heaps, int heapIndex, int objectsToRemove) {
-        return heapIndex >= 0 && heapIndex < heaps.length && heaps[heapIndex] >= objectsToRemove && objectsToRemove > 0;
-    }
-
-    // Getter method for result
-    public int getResult() {
-        return result;
     }
 }
