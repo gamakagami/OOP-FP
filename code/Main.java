@@ -1,7 +1,10 @@
 import java.util.Random;
 import java.util.Scanner;
+import java.util.InputMismatchException;
+
 
 public class Main {
+
     public static void main(String[] args) {
         Random random = new Random();
         Scanner scanner = new Scanner(System.in);
@@ -29,7 +32,7 @@ public class Main {
             }
 
             // Play a random game
-            int dice = random.nextInt(3);
+            int dice = 0;
 
             // initialize games and get result
             switch (dice) {
@@ -74,7 +77,7 @@ public class Main {
 
                 // Check if the current player has won
                 if (isWinner(ticTacToeBoard, (result == 1) ? 'X' : 'O')) {
-                    System.out.println("Player " + ((result == 1) ? 'X' : 'O') + " wins!");
+                    System.out.println("Player " + ((result == 1) ? '1' : '2') + " wins!");
                     break; // Exit the loop if there's a winner
                 } else if (isBoardFull(ticTacToeBoard)) { // Check if the board is full and it's a draw
                     System.out.println("Draw! The board is full.");
@@ -88,58 +91,9 @@ public class Main {
 
     // Method to place a block on the Tic-Tac-Toe board
     public static void placeBlock(Scanner scanner, char[][] board, char symbol, int choice) {
-        // Handle placing a block for Player X
-        if (symbol == 'X') {
-            System.out.println("Player X's turn.");
-            int row = -1, col = -1;
-            boolean validInput = false;
-
-            // Loop to get valid row input from the user
-            while (!validInput) {
-                System.out.print("Enter the row (0-2) to place " + symbol + ": ");
-                if (scanner.hasNextInt()) {
-                    row = scanner.nextInt();
-                    if (row >= 0 && row <= 2) {
-                        validInput = true; // Valid row
-                    } else {
-                        System.out.println("Invalid row. Please enter a number between 0 and 2.");
-                    }
-                } else {
-                    System.out.println("Invalid input. Please enter a valid number.");
-                    scanner.next(); // Consume invalid input
-                }
-            }
-
-            validInput = false; // Reset validInput flag for column input
-
-            // Loop to get valid column input from the user
-            while (!validInput) {
-                System.out.print("Enter the column (0-2) to place " + symbol + ": ");
-                if (scanner.hasNextInt()) {
-                    col = scanner.nextInt();
-                    if (col >= 0 && col <= 2) {
-                        validInput = true; // Valid column
-                    } else {
-                        System.out.println("Invalid column. Please enter a number between 0 and 2.");
-                    }
-                } else {
-                    System.out.println("Invalid input. Please enter a valid number.");
-                    scanner.next(); // Consume invalid input
-                }
-            }
-
-            // Check if the cell is empty before placing the symbol
-            if (board[row][col] == '\u0000') {
-                board[row][col] = symbol;
-            } else {
-                System.out.println("The cell is already occupied. Please choose another cell.");
-                printBoard(board); // Show current board state
-                placeBlock(scanner, board, symbol, choice); // Ask for input again
-            }
-            printBoard(board); // Print the board after placing the block
-        } else {  // Handle placing a block for Player O
-            if (choice == 1) { // If player vs player mode
-                System.out.println("Player O's turn.");
+        try {
+            if (symbol == 'X') { // Handle placing a block for Player X
+                System.out.println("Player 1 (X) turn.");
                 int row = -1, col = -1;
                 boolean validInput = false;
 
@@ -167,7 +121,7 @@ public class Main {
                     if (scanner.hasNextInt()) {
                         col = scanner.nextInt();
                         if (col >= 0 && col <= 2) {
-                            validInput = true; //Valid column
+                            validInput = true; // Valid column
                         } else {
                             System.out.println("Invalid column. Please enter a number between 0 and 2.");
                         }
@@ -186,20 +140,75 @@ public class Main {
                     placeBlock(scanner, board, symbol, choice); // Ask for input again
                 }
                 printBoard(board); // Print the board after placing the block
-            } else { // If player vs AI mode
-                System.out.println("Player O's turn (AI).");
-                Random random = new Random();
-                int row, col;
+            } else {  // Handle placing a block for Player O
+                if (choice == 1) { // If player vs player mode
+                    System.out.println("Player 2 (O) turn.");
+                    int row = -1, col = -1;
+                    boolean validInput = false;
 
-                // Generate random moves until an empty cell is found
-                do {
-                    row = random.nextInt(3);
-                    col = random.nextInt(3);
-                } while (board[row][col] != '\u0000'); // Keep generating random moves until an empty cell is found
-                board[row][col] = symbol;
-                System.out.println("AI placed " + symbol + " at row " + row + ", column " + col);
-                printBoard(board); // Print the board after placing the block
+                    // Loop to get valid row input from the user
+                    while (!validInput) {
+                        System.out.print("Enter the row (0-2) to place " + symbol + ": ");
+                        if (scanner.hasNextInt()) {
+                            row = scanner.nextInt();
+                            if (row >= 0 && row <= 2) {
+                                validInput = true; // Valid row
+                            } else {
+                                System.out.println("Invalid row. Please enter a number between 0 and 2.");
+                            }
+                        } else {
+                            System.out.println("Invalid input. Please enter a valid number.");
+                            scanner.next(); // Consume invalid input
+                        }
+                    }
+
+                    validInput = false; // Reset validInput flag for column input
+
+                    // Loop to get valid column input from the user
+                    while (!validInput) {
+                        System.out.print("Enter the column (0-2) to place " + symbol + ": ");
+                        if (scanner.hasNextInt()) {
+                            col = scanner.nextInt();
+                            if (col >= 0 && col <= 2) {
+                                validInput = true; // Valid column
+                            } else {
+                                System.out.println("Invalid column. Please enter a number between 0 and 2.");
+                            }
+                        } else {
+                            System.out.println("Invalid input. Please enter a valid number.");
+                            scanner.next(); // Consume invalid input
+                        }
+                    }
+
+                    // Check if the cell is empty before placing the symbol
+                    if (board[row][col] == '\u0000') {
+                        board[row][col] = symbol;
+                    } else {
+                        System.out.println("The cell is already occupied. Please choose another cell.");
+                        printBoard(board); // Show current board state
+                        placeBlock(scanner, board, symbol, choice); // Ask for input again
+                    }
+                    printBoard(board); // Print the board after placing the block
+                } else { // If player vs AI mode
+                    System.out.println("AI's (O) turn");
+                    Random random = new Random();
+                    int row, col;
+
+                    // Generate random moves until an empty cell is found
+                    do {
+                        row = random.nextInt(3);
+                        col = random.nextInt(3);
+                    } while (board[row][col] != '\u0000'); // Keep generating random moves until an empty cell is found
+                    board[row][col] = symbol;
+                    System.out.println("AI placed " + symbol + " at row " + row + ", column " + col);
+                    printBoard(board); // Print the board after placing the block
+                }
             }
+        } catch (InputMismatchException e) {
+            System.out.println("Invalid input. Please enter a valid number.");
+            scanner.next(); // Consume invalid input
+        } catch (Exception e) {
+            System.out.println("An error occurred: " + e.getMessage());
         }
     }
 
