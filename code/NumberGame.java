@@ -1,8 +1,8 @@
 import java.util.Random;
 import java.util.Scanner;
 
-public class NumberGame {
-    static int result = 0; // Static variable to store the result of the game
+
+public class NumberGame extends Game{
 
     // Method to play a game between two players
     public static void playTwoPlayers(Random random, Scanner scanner) {
@@ -233,11 +233,5 @@ public class NumberGame {
             System.out.println("AI wins with "+pgAI+" over player with "+pg1);
             result = 2; // Set result to AI wins
         }
-    }
-
-    // Getter method for result
-    public int getResult(){
-        return result;
-
     }
 }
