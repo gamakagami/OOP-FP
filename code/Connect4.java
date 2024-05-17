@@ -1,7 +1,7 @@
 import java.util.Random;
 import java.util.Scanner;
 
-public class Connect4 {
+public class Connect4 extends Game {
 
     // Constants to define the dimensions of the board and the player symbols
     private static final int ROWS = 6;
@@ -12,7 +12,6 @@ public class Connect4 {
 
     private char[][] board; // 2D array to represent the board
     private Random random;  // Random object to generate random moves for AI
-    private int result = 0; // Variable to store the result of the game
 
     // Constructor to initialize the board and random generator
     public Connect4() {
@@ -210,8 +209,4 @@ public class Connect4 {
         return true;
     }
 
-    // Getter method for result
-    public int getResult() {
-        return result;
-    }
 }
