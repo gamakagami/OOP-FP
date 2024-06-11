@@ -3,7 +3,7 @@ import java.util.Scanner;
 import java.util.InputMismatchException;
 
 
-public class Main {
+final public class Main {
 
     public static void main(String[] args) {
         Random random = new Random();
@@ -15,53 +15,100 @@ public class Main {
         char[][] ticTacToeBoard = new char[3][3]; // Tic-Tac-Toe board
 
         while (play == 0) { // Loop until the user exits the game
-            // asks user to enter game mode
+
+            // Explain the game rule
             if (plays == 0) {
                 if (choice == 0) { // If it's the first iteration, prompt for the choice
+                    System.out.println("Welcome to the Gam game!");
+                    System.out.println("------------------------");
+                    System.out.println("Play a randomized game and winner puts a block in tictactoe, game goes on until tictactoe is over");
+                    System.out.println("------------------------");
+                    System.out.println("Game rules:");
+
+                    //Nim rules
+                    System.out.println("Nim:\n"+"The game is played with 3 piles of objects.\n" +
+                            "Two players take turns.\n" +
+                            "On each turn, a player must remove at least 1 and at most 3 object from a single pile.\n" +
+                            "The player forced to take the last object loses.");
+                    System.out.println("------------------------");
+
+                    //Connect 4 rules
+                    System.out.println("Connect 4:\nPlayer puts a symbol within a grid with 7 columns and 6 rows.\n" +
+                            "Two players take turns.\nThe symbols occupies the lowest available space within the column.\n" +
+                            "A player wins by connecting four of their symbols in a row horizontally, vertically, or diagonally.");
+                    System.out.println("------------------------");
+
+                    //Number Game rules
+                    System.out.println("Number Game:");
+                    System.out.println("Each player gets a random number between 0 - 21");
+                    System.out.println("Players can add their numbers up to 2 times, ranging from 1-4, 5-7, 8-10");
+                    System.out.println("Players with the highest number <= 21 wins");
+                    System.out.println("------------------------");
+
+                    // Ask user to enter game mode
                     System.out.println("Choose the game mode:");
                     System.out.println("1. Player vs Player");
                     System.out.println("2. Player vs AI");
-                    System.out.print("Enter your choice (1 or 2): ");
+                    System.out.println("------------------------");
+                    System.out.print("Please enter your choice (1 or 2): ");
                     choice = scanner.nextInt();
+
+                    // Validation until user enters a valid game mode
                     while (choice != 1 && choice != 2) {
                         System.out.println("Invalid choice. Please enter 1 or 2.");
                         choice = scanner.nextInt();
                     }
                 }
+
+                // exit choosing game mode
                 plays ++;
             }
 
             // Play a random game
-            int dice = 0;
+            int dice = random.nextInt(3);
 
             // initialize games and get result
             switch (dice) {
                 case 0:
+
+                    // Starting Nim game and get result
                     System.out.println("You got Nim!");
                     Nim nim = new Nim();
                     nim.startGame(choice, scanner);
                     result = nim.getResult();
                     break;
-                case 1:
-                    System.out.println("You got Connect 4!");
 
+                case 1:
+
+                    // Starting Connect 4 game and get result
+                    System.out.println("You got Connect 4!");
                     Connect4 game = new Connect4();
                     if (choice == 1) {
+
+                        // Player vs Player mode
                         game.playGame();
                         result = game.getResult();
                     } else {
+
                         // Player vs AI mode
                         game.playGameAgainstAI();
                         result = game.getResult();
                     }
                     break;
+
                 case 2:
+
+                    // Starting Number game and get result
                     System.out.println("You got Number Game!");
                     NumberGame numberGame = new NumberGame();
                     if (choice == 1) {
+
+                        // Player vs Player mode
                         numberGame.playTwoPlayers(random, scanner);
                         result = numberGame.getResult();
                     } else {
+
+                        // Player vs AI mode
                         numberGame.playVsAI(random, scanner);
                         result = numberGame.getResult();
                     }
@@ -135,9 +182,10 @@ public class Main {
                 if (board[row][col] == '\u0000') {
                     board[row][col] = symbol;
                 } else {
+                    // Show current board state and ask for input again
                     System.out.println("The cell is already occupied. Please choose another cell.");
-                    printBoard(board); // Show current board state
-                    placeBlock(scanner, board, symbol, choice); // Ask for input again
+                    printBoard(board);
+                    placeBlock(scanner, board, symbol, choice);
                 }
                 printBoard(board); // Print the board after placing the block
             } else {  // Handle placing a block for Player O
