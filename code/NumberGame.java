@@ -2,7 +2,7 @@ import java.util.Random;
 import java.util.Scanner;
 
 
-public class NumberGame extends Game{
+final public class NumberGame extends Game{
 
     // Method to play a game between two players
     public static void playTwoPlayers(Random random, Scanner scanner) {
