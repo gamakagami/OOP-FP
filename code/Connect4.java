@@ -1,7 +1,7 @@
 import java.util.Random;
 import java.util.Scanner;
 
-public class Connect4 extends Game {
+final public class Connect4 extends Game {
 
     // Constants to define the dimensions of the board and the player symbols
     private static final int ROWS = 6;
