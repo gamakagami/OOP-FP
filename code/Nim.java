@@ -2,13 +2,17 @@ import java.util.ArrayList;
 import java.util.Random;
 import java.util.Scanner;
 
-public class Nim extends Game {
+final public class Nim extends Game {
 
     // Method to start the game
     public void startGame(int choice, Scanner scanner) {
         Random random = new Random();
 
         System.out.println("Welcome to Nim!");
+        System.out.println("\nRules:\n"+"The game is played with 3 piles of objects.\n" +
+                "Two players take turns.\n" +
+                "On each turn, a player must remove at least 1 and at most 3 object from a single pile.\n" +
+                "The player forced to take the last object loses.");
 
         // Set up initial state for each heap
         ArrayList<Integer> heaps = new ArrayList<>();
