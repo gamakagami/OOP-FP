@@ -1,21 +1,125 @@
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Scanner;
 
-final public class Nim extends Game {
+public class Nim extends Game {
+
+    private static class NimGUI extends JFrame {
+        private JTextField heapIndexField;
+        private JTextField objectsToRemoveField;
+        private JButton submitButton;
+        private JLabel heapsInfoLabel;
+        private int heapIndex = -1;
+        private int objectsToRemove = -1;
+
+        public NimGUI() {
+            setTitle("Nim Game");
+            setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            setSize(400, 300);
+            setLocationRelativeTo(null); // Center the window
+
+            JPanel inputPanel = new JPanel(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(5, 5, 5, 5); // Add padding
+
+            heapsInfoLabel = new JLabel("Heaps Information:");
+            gbc.gridx = 0;
+            gbc.gridy = 0;
+            gbc.gridwidth = 2;
+            inputPanel.add(heapsInfoLabel, gbc);
+            gbc.gridwidth = 1; // Reset grid width
+
+            heapIndexField = new JTextField(5);
+            gbc.gridx = 0;
+            gbc.gridy = 1;
+            inputPanel.add(new JLabel("Heap Index (1-3):"), gbc);
+            gbc.gridx = 1;
+            inputPanel.add(heapIndexField, gbc);
+
+            objectsToRemoveField = new JTextField(5);
+            gbc.gridx = 0;
+            gbc.gridy = 2;
+            inputPanel.add(new JLabel("Objects to Remove (1-3):"), gbc);
+            gbc.gridx = 1;
+            inputPanel.add(objectsToRemoveField, gbc);
+
+            submitButton = new JButton("Submit");
+            submitButton.addActionListener(e -> handlePlayerInput());
+            gbc.gridx = 0;
+            gbc.gridy = 3;
+            gbc.gridwidth = 2;
+            gbc.anchor = GridBagConstraints.CENTER;
+            inputPanel.add(submitButton, gbc);
+
+            add(inputPanel, BorderLayout.CENTER);
+
+            setVisible(true);
+        }
+
+        public void updateUI(ArrayList<Integer> heaps, boolean player1Turn, boolean vsAI) {
+            StringBuilder message = new StringBuilder("<html>Current State:<br>");
+            for (int i = 0; i < heaps.size(); i++) {
+                message.append("Heap ").append(i + 1).append(": ").append(heaps.get(i)).append(" objects<br>");
+            }
+            message.append("<br>");
+            if (vsAI) {
+                message.append(player1Turn ? "Player 1's turn." : "AI's turn.");
+            } else {
+                message.append(player1Turn ? "Player 1's turn." : "Player 2's turn.");
+            }
+            message.append("</html>");
+            heapsInfoLabel.setText(message.toString());
+        }
+
+        public void displayMessage(String message) {
+            JOptionPane.showMessageDialog(this, message);
+        }
+
+        public boolean isInputReady() {
+            return heapIndex >= 0 && objectsToRemove >= 0;
+        }
+
+        public int getHeapIndex() {
+            return heapIndex;
+        }
+
+        public int getObjectsToRemove() {
+            return objectsToRemove;
+        }
+
+        private void handlePlayerInput() {
+            try {
+                heapIndex = Integer.parseInt(heapIndexField.getText()) - 1;
+                objectsToRemove = Integer.parseInt(objectsToRemoveField.getText());
+                heapIndexField.setText("");
+                objectsToRemoveField.setText("");
+            } catch (NumberFormatException e) {
+                displayMessage("Invalid input. Please enter numbers only.");
+            }
+        }
+
+        public void resetInput() {
+            heapIndex = -1;
+            objectsToRemove = -1;
+        }
+    }
+
+    private NimGUI gui;
+    private int result; // Example of private field in Nim class
+
+    // Method to initialize UI
+    public void initializeUI() {
+        gui = new NimGUI();
+    }
 
     // Method to start the game
-    public void startGame(int choice, Scanner scanner) {
-        Random random = new Random();
-
-        System.out.println("Welcome to Nim!");
-        System.out.println("\nRules:\n"+"The game is played with 3 piles of objects.\n" +
-                "Two players take turns.\n" +
-                "On each turn, a player must remove at least 1 and at most 3 object from a single pile.\n" +
-                "The player forced to take the last object loses.");
+    public void startGame(int choice) {
+        initializeUI();
 
         // Set up initial state for each heap
         ArrayList<Integer> heaps = new ArrayList<>();
+        Random random = new Random();
         heaps.add(random.nextInt(2) + 3);
         heaps.add(random.nextInt(2) + 4);
         heaps.add(random.nextInt(2) + 5);
@@ -23,30 +127,27 @@ final public class Nim extends Game {
         // Main game loop
         boolean player1Turn = true; // Variable to track whose turn it is
         boolean vsAI = choice == 2; // Determine if the game is against AI based on the user's choice
+
         while (true) {
-            // Display current state of heaps
-            System.out.println("\nCurrent State:");
-            for (int i = 0; i < heaps.size(); i++) {
-                System.out.println("Heap " + (i + 1) + ": " + heaps.get(i) + " objects");
-            }
+            // Update GUI with current state of heaps
+            gui.updateUI(heaps, player1Turn, vsAI);
 
             // Check if the game is over
             if (isGameOver(heaps)) {
-                System.out.println("\nGame Over!");
                 if (player1Turn) { // If it's player 1's turn when game ends
                     if (vsAI) {
-                        System.out.println("You win!"); //Player 1 wins against AI
+                        gui.displayMessage("You win!"); // Player 1 wins against AI
                         result = 1;
                     } else {
-                        System.out.println("Player 1 wins!"); // Player 1 wins against Player 2
+                        gui.displayMessage("Player 1 wins!"); // Player 1 wins against Player 2
                         result = 1;
                     }
                 } else {
                     if (vsAI) {
-                        System.out.println("AI wins!"); // AI wins
+                        gui.displayMessage("AI wins!"); // AI wins
                         result = 2;
                     } else {
-                        System.out.println("Player 2 wins!"); // Player 2 wins
+                        gui.displayMessage("Player 2 wins!"); // Player 2 wins
                         result = 2;
                     }
                 }
@@ -55,53 +156,44 @@ final public class Nim extends Game {
 
             // Player's turn
             if (player1Turn || !vsAI) {
-                int heapIndex, objectsToRemove;
-                do {
-                    System.out.println("\nPlayer " + (player1Turn ? "1" : "2") + "'s turn:");
-                    System.out.print("Enter the heap index (1-" + heaps.size() + "): ");
-                    heapIndex = scanner.nextInt() - 1; // Adjust for zero-based index
-                    if (heapIndex < 0 || heapIndex >= heaps.size()) {
-                        System.out.println("Invalid heap index. Please enter a number between 1 and " + heaps.size() + ".");
-                        // Display current state of heaps
-                        System.out.println("\nCurrent State:");
-                        for (int i = 0; i < heaps.size(); i++) {
-                            System.out.println("Heap " + (i + 1) + ": " + heaps.get(i) + " objects");
-                        }
-                        continue;
+                while (!gui.isInputReady()) {
+                    // Wait for player input
+                    try {
+                        Thread.sleep(100); // Sleep briefly to reduce CPU usage
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                    if (heaps.get(heapIndex) == 0) {
-                        System.out.println("Heap " + (heapIndex + 1) + " is empty. Please choose another heap.");
-                        // Display current state of heaps
-                        System.out.println("\nCurrent State:");
-                        for (int i = 0; i < heaps.size(); i++) {
-                            System.out.println("Heap " + (i + 1) + ": " + heaps.get(i) + " objects");
-                        }
-                        continue;
-                    }
-                    System.out.print("Enter the number of objects to remove (1-" + Math.min(heaps.get(heapIndex), 3) + "): ");
-                    objectsToRemove = scanner.nextInt();
-                    if (objectsToRemove < 1 || objectsToRemove > Math.min(heaps.get(heapIndex), 3)) {
-                        System.out.println("Invalid number of objects. Please enter a number between 1 and " + Math.min(heaps.get(heapIndex), 3) + ".");
-                        // Display current state of heaps
-                        System.out.println("\nCurrent State:");
-                        for (int i = 0; i < heaps.size(); i++) {
-                            System.out.println("Heap " + (i + 1) + ": " + heaps.get(i) + " objects");
-                        }
-                        continue;
-                    }
-                    break; // Break out of the loop if valid input is provided
-                } while (true); // Infinite loop until valid input is provided
+                }
+                int heapIndex = gui.getHeapIndex();
+                int objectsToRemove = gui.getObjectsToRemove();
+
+                if (heapIndex < 0 || heapIndex >= heaps.size()) {
+                    gui.displayMessage("Invalid heap index. Please enter a number between 1 and " + heaps.size() + ".");
+                    gui.resetInput();
+                    continue;
+                }
+                if (heaps.get(heapIndex) == 0) {
+                    gui.displayMessage("Heap " + (heapIndex + 1) + " is empty. Please choose another heap.");
+                    gui.resetInput();
+                    continue;
+                }
+                if (objectsToRemove < 1 || objectsToRemove > Math.min(heaps.get(heapIndex), 3)) {
+                    gui.displayMessage("Invalid number of objects. Please enter a number between 1 and " + Math.min(heaps.get(heapIndex), 3) + ".");
+                    gui.resetInput();
+                    continue;
+                }
                 heaps.set(heapIndex, heaps.get(heapIndex) - objectsToRemove);
+                gui.resetInput();
             } else {
                 // AI's turn
                 int heapIndex, objectsToRemove;
                 do {
                     heapIndex = random.nextInt(heaps.size());
                 } while (heaps.get(heapIndex) == 0); // Ensure selected heap is not empty
-                // AI randomly chooses a number of objects to remove (1-3 or the remaining objects in the heap)
                 objectsToRemove = random.nextInt(Math.min(3, heaps.get(heapIndex))) + 1;
                 heaps.set(heapIndex, heaps.get(heapIndex) - objectsToRemove);
-                System.out.println("\nAI removes " + objectsToRemove + " objects from heap " + (heapIndex + 1));
+                gui.updateUI(heaps, player1Turn, vsAI);
+                gui.displayMessage("AI removes " + objectsToRemove + " objects from heap " + (heapIndex + 1));
             }
 
             player1Turn = !player1Turn; // Switch turns
