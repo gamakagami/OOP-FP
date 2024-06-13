@@ -1,117 +1,172 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.InputMismatchException;
 
-
 final public class Main {
 
+    private JFrame frame;
+    private JPanel panel;
+    private JLabel label;
+    private JButton start;
+    private JButton quit;
+    private static Random random = new Random();
+    private static Scanner scanner = new Scanner(System.in);
+    private int choice;
+
+    public Main() {
+        frame = new JFrame("The Gam Game");
+        panel = new JPanel();
+        label = new JLabel("Welcome to the Gam game!");
+        start = new JButton("Start");
+        quit = new JButton("Quit");
+
+        panel.setBorder(BorderFactory.createEmptyBorder(200, 250, 200, 250));
+        panel.setLayout(new GridLayout(0, 1));
+
+        // Set font, size, and style
+        label.setFont(new Font("Serif", Font.BOLD, 24));
+        // Customize buttons
+        start.setFont(new Font("Serif", Font.PLAIN, 18));
+        start.setAlignmentX(Component.CENTER_ALIGNMENT);
+        quit.setFont(new Font("Serif", Font.PLAIN, 18));
+        quit.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Add action listeners to buttons
+        start.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayInstructions(); // Display instructions in a dialog
+            }
+        });
+
+        quit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0); // Exit the application
+            }
+        });
+
+        panel.add(label);
+        panel.add(Box.createRigidArea(new Dimension(0, 20))); // Add space between label and start button
+        panel.add(start);
+        panel.add(Box.createRigidArea(new Dimension(0, 10))); // Add space between start button and quit button
+        panel.add(quit);
+
+        frame.add(panel);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.pack();
+        frame.setVisible(true);
+    }
+
     public static void main(String[] args) {
-        Random random = new Random();
-        Scanner scanner = new Scanner(System.in);
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new Main();
+            }
+        });
+    }
+
+    // Method to display instructions
+    private void displayInstructions() {
+        JOptionPane.showMessageDialog(null, "Welcome to the Gam game!\n\n" +
+                "Play a randomized game and winner puts a block in tictactoe, game goes on until tictactoe is over\n\n" +
+                "Game rules:\n\n" +
+                "Nim:\n" + "The game is played with 3 piles of objects.\n" +
+                "Two players take turns.\n" +
+                "On each turn, a player must remove at least 1 and at most 3 object from a single pile.\n" +
+                "The player forced to take the last object loses.\n\n" +
+                "Connect 4:\n" + "Player puts a symbol within a grid with 7 columns and 6 rows.\n" +
+                "Two players take turns.\nThe symbols occupies the lowest available space within the column.\n" +
+                "A player wins by connecting four of their symbols in a row horizontally, vertically, or diagonally.\n\n" +
+                "Number Game:\n" + "Each player gets a random number between 0 - 21\n" +
+                "Players can add their numbers up to 2 times, ranging from 1-4, 5-7, 8-10\n" +
+                "Players with the highest number <= 21 wins\n\n" +
+                "Choose the game mode:\n" +
+                "1. Player vs Player\n" +
+                "2. Player vs AI", "Instructions", JOptionPane.INFORMATION_MESSAGE);
+
+        boolean validInput = false;
+        while (!validInput) {
+            String mode = JOptionPane.showInputDialog(null, "Please enter the game mode (1 (Player vs Player) or 2 (Player vs AI) ):");
+            try {
+                choice = Integer.parseInt(mode);
+                if (choice != 1 && choice != 2) {
+                    JOptionPane.showMessageDialog(null, "Invalid choice. Please enter 1 or 2.", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    validInput = true;
+                    // Start the game in a new thread to keep the GUI responsive
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            startGame();
+                        }
+                    }).start();
+                }
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(null, "Invalid input. Please enter a valid number (1 or 2).", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }
+
+    private void startGame() {
         int play = 0;
-        int plays = 0;
         int result = 0;
-        int choice = 0; // Variable to store the user's choice
         char[][] ticTacToeBoard = new char[3][3]; // Tic-Tac-Toe board
 
         while (play == 0) { // Loop until the user exits the game
-
-            // Explain the game rule
-            if (plays == 0) {
-                if (choice == 0) { // If it's the first iteration, prompt for the choice
-                    System.out.println("Welcome to the Gam game!");
-                    System.out.println("------------------------");
-                    System.out.println("Play a randomized game and winner puts a block in tictactoe, game goes on until tictactoe is over");
-                    System.out.println("------------------------");
-                    System.out.println("Game rules:");
-
-                    //Nim rules
-                    System.out.println("Nim:\n"+"The game is played with 3 piles of objects.\n" +
-                            "Two players take turns.\n" +
-                            "On each turn, a player must remove at least 1 and at most 3 object from a single pile.\n" +
-                            "The player forced to take the last object loses.");
-                    System.out.println("------------------------");
-
-                    //Connect 4 rules
-                    System.out.println("Connect 4:\nPlayer puts a symbol within a grid with 7 columns and 6 rows.\n" +
-                            "Two players take turns.\nThe symbols occupies the lowest available space within the column.\n" +
-                            "A player wins by connecting four of their symbols in a row horizontally, vertically, or diagonally.");
-                    System.out.println("------------------------");
-
-                    //Number Game rules
-                    System.out.println("Number Game:");
-                    System.out.println("Each player gets a random number between 0 - 21");
-                    System.out.println("Players can add their numbers up to 2 times, ranging from 1-4, 5-7, 8-10");
-                    System.out.println("Players with the highest number <= 21 wins");
-                    System.out.println("------------------------");
-
-                    // Ask user to enter game mode
-                    System.out.println("Choose the game mode:");
-                    System.out.println("1. Player vs Player");
-                    System.out.println("2. Player vs AI");
-                    System.out.println("------------------------");
-                    System.out.print("Please enter your choice (1 or 2): ");
-                    choice = scanner.nextInt();
-
-                    // Validation until user enters a valid game mode
-                    while (choice != 1 && choice != 2) {
-                        System.out.println("Invalid choice. Please enter 1 or 2.");
-                        choice = scanner.nextInt();
-                    }
-                }
-
-                // exit choosing game mode
-                plays ++;
-            }
-
             // Play a random game
-            int dice = random.nextInt(3);
+            int dice =2;
 
             // initialize games and get result
             switch (dice) {
                 case 0:
-
                     // Starting Nim game and get result
                     System.out.println("You got Nim!");
                     Nim nim = new Nim();
-                    nim.startGame(choice, scanner);
+                    if (choice == 1) {
+                        // Player vs Player mode
+                        nim.startGame(1);
+                    } else {
+                        // Player vs AI mode
+                        nim.startGame(2);
+                    }
                     result = nim.getResult();
                     break;
 
                 case 1:
-
                     // Starting Connect 4 game and get result
                     System.out.println("You got Connect 4!");
                     Connect4 game = new Connect4();
                     if (choice == 1) {
-
                         // Player vs Player mode
                         game.playGame();
-                        result = game.getResult();
                     } else {
-
                         // Player vs AI mode
                         game.playGameAgainstAI();
-                        result = game.getResult();
                     }
+                    result = game.getResult();
                     break;
 
                 case 2:
-
                     // Starting Number game and get result
                     System.out.println("You got Number Game!");
                     NumberGame numberGame = new NumberGame();
                     if (choice == 1) {
-
                         // Player vs Player mode
-                        numberGame.playTwoPlayers(random, scanner);
-                        result = numberGame.getResult();
-                    } else {
+                        numberGame.setGameMode(1);
+                        numberGame.startGame();
 
+                    } else {
                         // Player vs AI mode
-                        numberGame.playVsAI(random, scanner);
-                        result = numberGame.getResult();
+                        numberGame.setGameMode(2);
+                        numberGame.startGame();
                     }
+                    result = numberGame.getResult();
                     break;
             }
 
@@ -178,136 +233,111 @@ final public class Main {
                     }
                 }
 
-                // Check if the cell is empty before placing the symbol
                 if (board[row][col] == '\u0000') {
-                    board[row][col] = symbol;
+                    board[row][col] = symbol; // Place the symbol on the board
                 } else {
-                    // Show current board state and ask for input again
-                    System.out.println("The cell is already occupied. Please choose another cell.");
-                    printBoard(board);
-                    placeBlock(scanner, board, symbol, choice);
+                    System.out.println("Position already occupied. Choose another position.");
+                    placeBlock(scanner, board, symbol, choice); // Retry placing the block
                 }
-                printBoard(board); // Print the board after placing the block
-            } else {  // Handle placing a block for Player O
-                if (choice == 1) { // If player vs player mode
-                    System.out.println("Player 2 (O) turn.");
-                    int row = -1, col = -1;
-                    boolean validInput = false;
 
-                    // Loop to get valid row input from the user
-                    while (!validInput) {
-                        System.out.print("Enter the row (0-2) to place " + symbol + ": ");
-                        if (scanner.hasNextInt()) {
-                            row = scanner.nextInt();
-                            if (row >= 0 && row <= 2) {
-                                validInput = true; // Valid row
-                            } else {
-                                System.out.println("Invalid row. Please enter a number between 0 and 2.");
-                            }
+            } else { // Handle placing a block for Player O
+                System.out.println("Player 2 (O) turn.");
+                int row = -1, col = -1;
+                boolean validInput = false;
+
+                // Loop to get valid row input from the user
+                while (!validInput) {
+                    System.out.print("Enter the row (0-2) to place " + symbol + ": ");
+                    if (scanner.hasNextInt()) {
+                        row = scanner.nextInt();
+                        if (row >= 0 && row <= 2) {
+                            validInput = true; // Valid row
                         } else {
-                            System.out.println("Invalid input. Please enter a valid number.");
-                            scanner.next(); // Consume invalid input
+                            System.out.println("Invalid row. Please enter a number between 0 and 2.");
                         }
-                    }
-
-                    validInput = false; // Reset validInput flag for column input
-
-                    // Loop to get valid column input from the user
-                    while (!validInput) {
-                        System.out.print("Enter the column (0-2) to place " + symbol + ": ");
-                        if (scanner.hasNextInt()) {
-                            col = scanner.nextInt();
-                            if (col >= 0 && col <= 2) {
-                                validInput = true; // Valid column
-                            } else {
-                                System.out.println("Invalid column. Please enter a number between 0 and 2.");
-                            }
-                        } else {
-                            System.out.println("Invalid input. Please enter a valid number.");
-                            scanner.next(); // Consume invalid input
-                        }
-                    }
-
-                    // Check if the cell is empty before placing the symbol
-                    if (board[row][col] == '\u0000') {
-                        board[row][col] = symbol;
                     } else {
-                        System.out.println("The cell is already occupied. Please choose another cell.");
-                        printBoard(board); // Show current board state
-                        placeBlock(scanner, board, symbol, choice); // Ask for input again
+                        System.out.println("Invalid input. Please enter a valid number.");
+                        scanner.next(); // Consume invalid input
                     }
-                    printBoard(board); // Print the board after placing the block
-                } else { // If player vs AI mode
-                    System.out.println("AI's (O) turn");
-                    Random random = new Random();
-                    int row, col;
+                }
 
-                    // Generate random moves until an empty cell is found
-                    do {
-                        row = random.nextInt(3);
-                        col = random.nextInt(3);
-                    } while (board[row][col] != '\u0000'); // Keep generating random moves until an empty cell is found
-                    board[row][col] = symbol;
-                    System.out.println("AI placed " + symbol + " at row " + row + ", column " + col);
-                    printBoard(board); // Print the board after placing the block
+                validInput = false; // Reset validInput flag for column input
+
+                // Loop to get valid column input from the user
+                while (!validInput) {
+                    System.out.print("Enter the column (0-2) to place " + symbol + ": ");
+                    if (scanner.hasNextInt()) {
+                        col = scanner.nextInt();
+                        if (col >= 0 && col <= 2) {
+                            validInput = true; // Valid column
+                        } else {
+                            System.out.println("Invalid column. Please enter a number between 0 and 2.");
+                        }
+                    } else {
+                        System.out.println("Invalid input. Please enter a valid number.");
+                        scanner.next(); // Consume invalid input
+                    }
+                }
+
+                if (board[row][col] == '\u0000') {
+                    board[row][col] = symbol; // Place the symbol on the board
+                } else {
+                    System.out.println("Position already occupied. Choose another position.");
+                    placeBlock(scanner, board, symbol, choice); // Retry placing the block
                 }
             }
         } catch (InputMismatchException e) {
             System.out.println("Invalid input. Please enter a valid number.");
             scanner.next(); // Consume invalid input
-        } catch (Exception e) {
-            System.out.println("An error occurred: " + e.getMessage());
+            placeBlock(scanner, board, symbol, choice); // Retry placing the block
         }
     }
 
     // Method to print the Tic-Tac-Toe board
     public static void printBoard(char[][] board) {
-        System.out.println("\nTic-Tac-Toe Board:");
-        for (char[] row : board) {
-            for (char cell : row) {
-                if (cell == '\u0000') {
-                    System.out.print("_ "); // Print underscore for empty cells
-                } else {
-                    System.out.print(cell + " "); // Print symbol for occupied cells
-                }
+        System.out.println("Current Tic-Tac-Toe board:");
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                System.out.print(board[i][j] == '\u0000' ? "_" : board[i][j]);
+                if (j < 2) System.out.print("|");
             }
             System.out.println();
         }
     }
 
-    // Method to check for a winner in Tic-Tac-Toe
-    public static boolean isWinner(char[][] board, char symbol) {
-
-        // Check rows and columns
-        for (int i = 0; i < 3; i++) {
-            if (board[i][0] == symbol && board[i][1] == symbol && board[i][2] == symbol) {
-                return true; // Row win
-            }
-            if (board[0][i] == symbol && board[1][i] == symbol && board[2][i] == symbol) {
-                return true; // Column win
-            }
-        }
-
-        // Check diagonals
-        if (board[0][0] == symbol && board[1][1] == symbol && board[2][2] == symbol) {
-            return true; // Diagonal win (top-left to bottom-right)
-        }
-        if (board[0][2] == symbol && board[1][1] == symbol && board[2][0] == symbol) {
-            return true; // Diagonal win (top-right to bottom-left)
-        }
-
-        return false; // No win found
-    }
-    // Method to check if the Tic-Tac-Toe board is full
+    // Method to check if the board is full
     public static boolean isBoardFull(char[][] board) {
-        for (char[] row : board) {
-            for (char cell : row) {
-                if (cell == '\u0000') {
-                    return false; // Found an empty cell
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (board[i][j] == '\u0000') {
+                    return false;
                 }
             }
         }
-        return true; // All cells are occupied
+        return true;
     }
 
+    // Method to check if the current player has won
+    public static boolean isWinner(char[][] board, char symbol) {
+        // Check rows
+        for (int i = 0; i < 3; i++) {
+            if (board[i][0] == symbol && board[i][1] == symbol && board[i][2] == symbol) {
+                return true;
+            }
+        }
+        // Check columns
+        for (int i = 0; i < 3; i++) {
+            if (board[0][i] == symbol && board[1][i] == symbol && board[2][i] == symbol) {
+                return true;
+            }
+        }
+        // Check diagonals
+        if (board[0][0] == symbol && board[1][1] == symbol && board[2][2] == symbol) {
+            return true;
+        }
+        if (board[0][2] == symbol && board[1][1] == symbol && board[2][0] == symbol) {
+            return true;
+        }
+        return false;
+    }
 }
