@@ -6,6 +6,7 @@ import java.util.Random;
 public class Nim extends Game {
 
     private static class NimGUI extends JFrame {
+        private JFrame frame = new JFrame("Nim Game");
         private JTextField heapIndexField;
         private JTextField objectsToRemoveField;
         private JButton submitButton;
@@ -14,11 +15,11 @@ public class Nim extends Game {
         private int objectsToRemove = -1;
 
         public NimGUI() {
-            setTitle("Nim Game");
             setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             setSize(400, 300);
             setLocationRelativeTo(null); // Center the window
 
+            JOptionPane.showMessageDialog(frame, "You got Nim!");
             JPanel inputPanel = new JPanel(new GridBagLayout());
             GridBagConstraints gbc = new GridBagConstraints();
             gbc.insets = new Insets(5, 5, 5, 5); // Add padding
@@ -106,7 +107,7 @@ public class Nim extends Game {
     }
 
     private NimGUI gui;
-    private int result; // Example of private field in Nim class
+    private int result; // 1 for Player 1 win, 2 for Player 2 (or AI) win
 
     // Method to initialize UI
     public void initializeUI() {
@@ -127,8 +128,9 @@ public class Nim extends Game {
         // Main game loop
         boolean player1Turn = true; // Variable to track whose turn it is
         boolean vsAI = choice == 2; // Determine if the game is against AI based on the user's choice
+        boolean gameOver = false; // Flag to track if the game is over
 
-        while (true) {
+        while (!gameOver) {
             // Update GUI with current state of heaps
             gui.updateUI(heaps, player1Turn, vsAI);
 
@@ -136,22 +138,28 @@ public class Nim extends Game {
             if (isGameOver(heaps)) {
                 if (player1Turn) { // If it's player 1's turn when game ends
                     if (vsAI) {
+
                         gui.displayMessage("You win!"); // Player 1 wins against AI
                         result = 1;
+                        gui.dispose();
                     } else {
                         gui.displayMessage("Player 1 wins!"); // Player 1 wins against Player 2
                         result = 1;
+                        gui.dispose();
                     }
                 } else {
                     if (vsAI) {
                         gui.displayMessage("AI wins!"); // AI wins
                         result = 2;
+                        gui.dispose();
                     } else {
                         gui.displayMessage("Player 2 wins!"); // Player 2 wins
                         result = 2;
+                        gui.dispose();
                     }
                 }
-                break;
+                gameOver = true; // Set gameOver to true to exit the loop
+                break; // Exit the loop when game is over
             }
 
             // Player's turn
@@ -208,5 +216,15 @@ public class Nim extends Game {
             }
         }
         return true; // Game is over if all heaps are empty
+    }
+
+    public int getResult() {
+        return result;
+    }
+
+    public static void main(String[] args) {
+        Nim nim = new Nim();
+        nim.startGame(1);
+        System.out.println("Game result: " + nim.getResult());
     }
 }
