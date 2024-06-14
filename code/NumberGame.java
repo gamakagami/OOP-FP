@@ -148,6 +148,9 @@ public class NumberGame extends Game {
             } else {
                 topLeftLabel.setText("Draw!");
                 topRightLabel.setText("Draw!");
+                frame.dispose();
+                result = 0;
+                resetGame();
             }
         } else if (player1Value > 21 && player2Value <= 21) {
             topLeftLabel.setText("Player 1 loses with " + player1Value);
@@ -158,6 +161,9 @@ public class NumberGame extends Game {
         } else {
             topLeftLabel.setText("Both players lose (Draw)");
             topRightLabel.setText("Both players lose (Draw)");
+            result = 0;
+            frame.dispose();
+            resetGame();
         }
     }
 
@@ -224,9 +230,11 @@ public class NumberGame extends Game {
             } else if (pgAI > player1Value) {
                 topLeftLabel.setText("Player 1 loses with " + player1Value);
                 topRightLabel.setText("AI wins with " + pgAI);
-            } else {
-                topLeftLabel.setText("Draw!");
-                topRightLabel.setText("Draw!");
+            }
+            else{
+                frame.dispose();
+                result = 0;
+                resetGame();
             }
         } else if (player1Value > 21 && pgAI <= 21) {
             topLeftLabel.setText("Player 1 loses with " + player1Value);
@@ -234,9 +242,6 @@ public class NumberGame extends Game {
         } else if (player1Value <= 21 && pgAI > 21) {
             topLeftLabel.setText("Player 1 wins with " + player1Value);
             topRightLabel.setText("AI loses with " + pgAI);
-        } else {
-            topLeftLabel.setText("Both players lose (Draw)");
-            topRightLabel.setText("Both players lose (Draw)");
         }
     }
 
@@ -281,22 +286,30 @@ public class NumberGame extends Game {
         // Show a dialog or update label for game result
         String resultMessage = "";
         if (topLeftLabel.getText().contains("wins")) {
+            result = 1;
             resultMessage = topLeftLabel.getText();
+            frame.dispose();
         } else if (topRightLabel.getText().contains("wins")) {
+            result=2;
             resultMessage = topRightLabel.getText();
+            frame.dispose();
         } else {
             resultMessage = "It's a draw!";
+
         }
 
         JOptionPane.showMessageDialog(frame, resultMessage, "Game Result", JOptionPane.INFORMATION_MESSAGE);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                NumberGame game = new NumberGame();
-                game.setGameMode(1); // Assuming PvP mode for example
-            }
-        });
+    private void resetGame() {
+        roll.setEnabled(true);
+        player1Value = 0;
+        player2Value = 0;
+        topLeftLabel.setText("Player 1: 0");
+        if (isPvP) {
+            topRightLabel.setText("Player 2: 0");
+        } else {
+            topRightLabel.setText("AI: 0");
+        }
     }
 }
