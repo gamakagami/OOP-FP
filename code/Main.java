@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.InputMismatchException;
 
 final public class Main {
 
@@ -16,6 +15,7 @@ final public class Main {
     private static Random random = new Random();
     private static Scanner scanner = new Scanner(System.in);
     private int choice;
+    private char[][] ticTacToeBoard = new char[3][3]; // Tic-Tac-Toe board
 
     public Main() {
         frame = new JFrame("The Gam Game");
@@ -58,7 +58,7 @@ final public class Main {
 
         frame.add(panel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.pack();
+        frame.setSize(800, 600); // Set fixed size for the initial frame
         frame.setVisible(true);
     }
 
@@ -115,193 +115,248 @@ final public class Main {
 
     private void startGame() {
         int play = 0;
-        int result = 0;
-        char[][] ticTacToeBoard = new char[3][3]; // Tic-Tac-Toe board
+
 
         while (play == 0) { // Loop until the user exits the game
             // Play a random game
-            int dice =2;
+            int dice = 2; // Randomly choose between Nim, Connect 4, or Number Game
+            int result = 0;
 
-            // initialize games and get result
-            switch (dice) {
-                case 0:
-                    // Starting Nim game and get result
-                    System.out.println("You got Nim!");
-                    Nim nim = new Nim();
-                    if (choice == 1) {
-                        // Player vs Player mode
-                        nim.startGame(1);
-                    } else {
-                        // Player vs AI mode
-                        nim.startGame(2);
-                    }
-                    result = nim.getResult();
-                    break;
+            // Initialize games and get result
+            try {
+                switch (dice) {
+                    case 0:
+                        System.out.println("You got Nim!");
+                        Nim nim = new Nim();
+                        nim.startGame(choice); // Start Nim game with chosen mode (1 or 2)
+                        result = nim.getResult();
+                        break;
 
-                case 1:
-                    // Starting Connect 4 game and get result
-                    System.out.println("You got Connect 4!");
-                    Connect4 game = new Connect4();
-                    if (choice == 1) {
-                        // Player vs Player mode
-                        game.playGame();
-                    } else {
-                        // Player vs AI mode
-                        game.playGameAgainstAI();
-                    }
-                    result = game.getResult();
-                    break;
+                    case 1:
+                        // Starting Connect 4 game and get result
+                        System.out.println("You got Connect 4!");
+                        Connect4 game = new Connect4();
+                        if (choice == 1) {
+                            // Player vs Player mode
+                            game.playGame();
+                        } else {
+                            // Player vs AI mode
+                            game.playGameAgainstAI();
+                        }
+                        result = game.getResult();
+                        break;
 
-                case 2:
-                    // Starting Number game and get result
-                    System.out.println("You got Number Game!");
-                    NumberGame numberGame = new NumberGame();
-                    if (choice == 1) {
-                        // Player vs Player mode
-                        numberGame.setGameMode(1);
-                        numberGame.startGame();
+                    case 2:
+                        while (result == 0) {
+                            // Starting Number game and get result
+                            System.out.println("You got Number Game!");
+                            NumberGame numberGame = new NumberGame();
+                            if (choice == 1) {
+                                // Player vs Player mode
+                                numberGame.setGameMode(1);
+                                numberGame.startGame();
 
-                    } else {
-                        // Player vs AI mode
-                        numberGame.setGameMode(2);
-                        numberGame.startGame();
-                    }
-                    result = numberGame.getResult();
-                    break;
-            }
-
-            // Check if the result of the previous game indicates a winner
-            if (result == 1 || result == 2) {
-                // Print the current state of the Tic-Tac-Toe board
-                printBoard(ticTacToeBoard);
-                // Place a block on the Tic-Tac-Toe board for the winning player
-                placeBlock(scanner, ticTacToeBoard, (result == 1) ? 'X' : 'O', choice);
-
-                // Check if the current player has won
-                if (isWinner(ticTacToeBoard, (result == 1) ? 'X' : 'O')) {
-                    System.out.println("Player " + ((result == 1) ? '1' : '2') + " wins!");
-                    break; // Exit the loop if there's a winner
-                } else if (isBoardFull(ticTacToeBoard)) { // Check if the board is full and it's a draw
-                    System.out.println("Draw! The board is full.");
-                    break; // Exit the loop if the board is full
+                            } else {
+                                // Player vs AI mode
+                                numberGame.setGameMode(2);
+                                numberGame.startGame();
+                            }
+                            result = numberGame.getResult();
+                        }
+                        break;
                 }
-                result = 0; // Reset result for the next game
+
+                // Check if the result of the previous game indicates a winner
+                // Check if the result of the previous game indicates a winner
+                if (result == 1 || result == 2) {
+                    char symbol = (result == 1) ? 'X' : 'O';
+                    boolean isAI = (choice == 2 && result == 2); // AI won in Player vs AI mode
+
+                    // Show the Tic-Tac-Toe GUI for the player/AI to place a block
+                    placeBlockGUI(ticTacToeBoard, symbol, isAI);
+
+                    // Check if the current player has won
+                    if (isWinner(ticTacToeBoard, symbol)) {
+                        if (isAI) {
+                            if (result==1) {
+                                JOptionPane.showMessageDialog(frame, "Player Wins!", "Game Result", JOptionPane.INFORMATION_MESSAGE);
+                                resetBoard();
+                                break; // Exit the loop if there's a winner
+                            }else{
+                                JOptionPane.showMessageDialog(frame,  "AI Wins!", "Game Result", JOptionPane.INFORMATION_MESSAGE);
+                                resetBoard();
+                                break;
+                            }
+                        }
+                        else{
+                            JOptionPane.showMessageDialog(frame, "Player " + ((result == 1) ? '1' : '2') + " Wins!", "Game Result", JOptionPane.INFORMATION_MESSAGE);
+                            resetBoard();
+                            break;
+                        }
+                    } else if (isBoardFull(ticTacToeBoard)) { // Check if the board is full and it's a draw
+                        JOptionPane.showMessageDialog(frame, "Draw! The board is full ", "Result", JOptionPane.INFORMATION_MESSAGE);
+                        resetBoard();
+                        break; // Exit the loop if the board is full
+                    }
+                    result = 0; // Reset result for the next game
+                }
+
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "An error occurred: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
         scanner.close();
     }
 
-    // Method to place a block on the Tic-Tac-Toe board
-    public static void placeBlock(Scanner scanner, char[][] board, char symbol, int choice) {
-        try {
-            if (symbol == 'X') { // Handle placing a block for Player X
-                System.out.println("Player 1 (X) turn.");
-                int row = -1, col = -1;
-                boolean validInput = false;
+    // Method to show the Tic-Tac-Toe GUI and place a block
+    private void placeBlockGUI(char[][] board, char symbol, boolean isAI) {
+        JFrame ticTacToeFrame = new JFrame("Tic-Tac-Toe");
+        JPanel ticTacToePanel = new JPanel();
+        ticTacToePanel.setLayout(new BorderLayout());
 
-                // Loop to get valid row input from the user
-                while (!validInput) {
-                    System.out.print("Enter the row (0-2) to place " + symbol + ": ");
-                    if (scanner.hasNextInt()) {
-                        row = scanner.nextInt();
-                        if (row >= 0 && row <= 2) {
-                            validInput = true; // Valid row
-                        } else {
-                            System.out.println("Invalid row. Please enter a number between 0 and 2.");
+        JLabel statusLabel = new JLabel("Player " + (symbol == 'X' ? '1' : '2') + " (" + symbol + ") turn", SwingConstants.CENTER);
+        statusLabel.setFont(new Font("Serif", Font.BOLD, 24));
+        ticTacToePanel.add(statusLabel, BorderLayout.NORTH);
+
+        JPanel boardPanel = new JPanel();
+        boardPanel.setLayout(new GridLayout(3, 3));
+        JButton[][] buttons = new JButton[3][3];
+
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                buttons[i][j] = new JButton(board[i][j] == '\u0000' ? "" : String.valueOf(board[i][j]));
+                buttons[i][j].setFont(new Font("Serif", Font.PLAIN, 60));
+                final int row = i;
+                final int col = j;
+                buttons[i][j].setEnabled(board[i][j] == '\u0000'); // Disable button if already occupied
+                buttons[i][j].addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        if (board[row][col] == '\u0000') {
+                            board[row][col] = symbol;
+                            buttons[row][col].setText(String.valueOf(symbol));
+                            disableButtons(buttons); // Disable all buttons after one move
                         }
-                    } else {
-                        System.out.println("Invalid input. Please enter a valid number.");
-                        scanner.next(); // Consume invalid input
                     }
-                }
-
-                validInput = false; // Reset validInput flag for column input
-
-                // Loop to get valid column input from the user
-                while (!validInput) {
-                    System.out.print("Enter the column (0-2) to place " + symbol + ": ");
-                    if (scanner.hasNextInt()) {
-                        col = scanner.nextInt();
-                        if (col >= 0 && col <= 2) {
-                            validInput = true; // Valid column
-                        } else {
-                            System.out.println("Invalid column. Please enter a number between 0 and 2.");
-                        }
-                    } else {
-                        System.out.println("Invalid input. Please enter a valid number.");
-                        scanner.next(); // Consume invalid input
-                    }
-                }
-
-                if (board[row][col] == '\u0000') {
-                    board[row][col] = symbol; // Place the symbol on the board
-                } else {
-                    System.out.println("Position already occupied. Choose another position.");
-                    placeBlock(scanner, board, symbol, choice); // Retry placing the block
-                }
-
-            } else { // Handle placing a block for Player O
-                System.out.println("Player 2 (O) turn.");
-                int row = -1, col = -1;
-                boolean validInput = false;
-
-                // Loop to get valid row input from the user
-                while (!validInput) {
-                    System.out.print("Enter the row (0-2) to place " + symbol + ": ");
-                    if (scanner.hasNextInt()) {
-                        row = scanner.nextInt();
-                        if (row >= 0 && row <= 2) {
-                            validInput = true; // Valid row
-                        } else {
-                            System.out.println("Invalid row. Please enter a number between 0 and 2.");
-                        }
-                    } else {
-                        System.out.println("Invalid input. Please enter a valid number.");
-                        scanner.next(); // Consume invalid input
-                    }
-                }
-
-                validInput = false; // Reset validInput flag for column input
-
-                // Loop to get valid column input from the user
-                while (!validInput) {
-                    System.out.print("Enter the column (0-2) to place " + symbol + ": ");
-                    if (scanner.hasNextInt()) {
-                        col = scanner.nextInt();
-                        if (col >= 0 && col <= 2) {
-                            validInput = true; // Valid column
-                        } else {
-                            System.out.println("Invalid column. Please enter a number between 0 and 2.");
-                        }
-                    } else {
-                        System.out.println("Invalid input. Please enter a valid number.");
-                        scanner.next(); // Consume invalid input
-                    }
-                }
-
-                if (board[row][col] == '\u0000') {
-                    board[row][col] = symbol; // Place the symbol on the board
-                } else {
-                    System.out.println("Position already occupied. Choose another position.");
-                    placeBlock(scanner, board, symbol, choice); // Retry placing the block
-                }
+                });
+                boardPanel.add(buttons[i][j]);
             }
-        } catch (InputMismatchException e) {
-            System.out.println("Invalid input. Please enter a valid number.");
-            scanner.next(); // Consume invalid input
-            placeBlock(scanner, board, symbol, choice); // Retry placing the block
+        }
+
+        if (isAI) {
+            placeAIMove(board, buttons, symbol); // AI places its move
+            showBoardGUI(ticTacToeBoard);
+            return;
+        }
+
+        JButton continueButton = new JButton("Continue");
+        continueButton.setFont(new Font("Serif", Font.PLAIN, 24));
+        continueButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ticTacToeFrame.dispose();
+            }
+        });
+
+        ticTacToePanel.add(boardPanel, BorderLayout.CENTER);
+        ticTacToePanel.add(continueButton, BorderLayout.SOUTH);
+
+        ticTacToeFrame.add(ticTacToePanel);
+        ticTacToeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        ticTacToeFrame.setSize(400, 400); // Set fixed size for the Tic-Tac-Toe frame
+        ticTacToeFrame.setVisible(true);
+
+        // Wait for the Tic-Tac-Toe window to close before continuing
+        while (ticTacToeFrame.isDisplayable()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    // Method to print the Tic-Tac-Toe board
-    public static void printBoard(char[][] board) {
-        System.out.println("Current Tic-Tac-Toe board:");
+    // Method to show the current state of the Tic-Tac-Toe board in the GUI
+    private void showBoardGUI(char[][] board) {
+        JFrame ticTacToeFrame = new JFrame("Tic-Tac-Toe Board");
+        JPanel ticTacToePanel = new JPanel();
+        ticTacToePanel.setLayout(new BorderLayout());
+
+        JLabel statusLabel = new JLabel("Current Tic-Tac-Toe Board", SwingConstants.CENTER);
+        statusLabel.setFont(new Font("Serif", Font.BOLD, 24));
+        ticTacToePanel.add(statusLabel, BorderLayout.NORTH);
+
+        JPanel boardPanel = new JPanel();
+        boardPanel.setLayout(new GridLayout(3, 3));
+        JButton[][] buttons = new JButton[3][3];
+
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
-                System.out.print(board[i][j] == '\u0000' ? "_" : board[i][j]);
-                if (j < 2) System.out.print("|");
+                buttons[i][j] = new JButton(board[i][j] == '\u0000' ? "" : String.valueOf(board[i][j]));
+                buttons[i][j].setFont(new Font("Serif", Font.PLAIN, 60));
+                buttons[i][j].setEnabled(false); // Disable button for viewing only
+                boardPanel.add(buttons[i][j]);
             }
-            System.out.println();
+        }
+
+        ticTacToePanel.add(boardPanel, BorderLayout.CENTER);
+
+        JButton continueButton = new JButton("Continue");
+        continueButton.setFont(new Font("Serif", Font.PLAIN, 24));
+        continueButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ticTacToeFrame.dispose();
+            }
+        });
+
+        ticTacToePanel.add(continueButton, BorderLayout.SOUTH);
+
+        ticTacToeFrame.add(ticTacToePanel);
+        ticTacToeFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        ticTacToeFrame.setSize(400, 400); // Set fixed size for the Tic-Tac-Toe frame
+        ticTacToeFrame.setVisible(true);
+
+        while (ticTacToeFrame.isDisplayable()) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    // Method for AI to place its move
+    private void placeAIMove(char[][] board, JButton[][] buttons, char symbol) {
+        // Simple AI: places the first available move
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (board[i][j] == '\u0000') {
+                    board[i][j] = symbol;
+                    buttons[i][j].setText(String.valueOf(symbol));
+                    buttons[i][j].setEnabled(false);
+                    return;
+                }
+            }
+        }
+    }
+
+    // Method to reset the Tic-Tac-Toe board
+    private void resetBoard() {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                ticTacToeBoard[i][j] = '\u0000';
+            }
+        }
+    }
+
+    // Method to disable all buttons on the Tic-Tac-Toe board
+    private void disableButtons(JButton[][] buttons) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                buttons[i][j].setEnabled(false);
+            }
         }
     }
 
@@ -341,3 +396,4 @@ final public class Main {
         return false;
     }
 }
+
