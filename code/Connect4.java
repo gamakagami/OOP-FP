@@ -112,6 +112,7 @@ public class Connect4 extends Game {
         for (int i = 0; i < ROWS; i++) {
             for (int j = 0; j <= COLS - 4; j++) {
                 if (board[i][j] == player && board[i][j + 1] == player && board[i][j + 2] == player && board[i][j + 3] == player) {
+                    frame.dispose();
                     return true;
                 }
             }
@@ -119,16 +120,21 @@ public class Connect4 extends Game {
         for (int j = 0; j < COLS; j++) {
             for (int i = 0; i <= ROWS - 4; i++) {
                 if (board[i][j] == player && board[i + 1][j] == player && board[i + 2][j] == player && board[i + 3][j] == player) {
+                    frame.dispose();
                     return true;
+
                 }
             }
         }
         for (int i = 0; i <= ROWS - 4; i++) {
             for (int j = 0; j <= COLS - 4; j++) {
                 if (board[i][j] == player && board[i + 1][j + 1] == player && board[i + 2][j + 2] == player && board[i + 3][j + 3] == player) {
+                    frame.dispose();
+
                     return true;
                 }
                 if (board[i][j + 3] == player && board[i + 1][j + 2] == player && board[i + 2][j + 1] == player && board[i + 3][j] == player) {
+                    frame.dispose();
                     return true;
                 }
             }
