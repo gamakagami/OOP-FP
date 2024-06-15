@@ -4,4 +4,5 @@ abstract class Game {
     public int getResult() {
         return result;
     }
+
 }
