@@ -7,6 +7,12 @@ Class: L2AC<br>
 **Contents:**
 <details>
   <Summary> Nim:</Summary>
+  Play with 3 piles of objects.
+Take turns removing 1 to 3
+objects from one pile. The
+player forced to take the last
+object loses.
+
 </details>
 <details>
  <Summary> Connect 4:</Summary>
