@@ -12,7 +12,7 @@ Take turns removing 1 to 3
 objects from one pile. The
 player forced to take the last
 object loses.
-
+<img src="Nim frame.jpg">
 </details>
 <details>
  <Summary> Connect 4:</Summary>
