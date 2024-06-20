@@ -6,7 +6,7 @@ import java.util.Random;
 public class Nim extends Game {
 
     // GUI class for the game
-    private static class NimGUI {
+    private static class NimGUI implements In{
 
         // GUI components
         private JFrame frame;
@@ -133,6 +133,11 @@ public class Nim extends Game {
         public void dispose() {
             frame.dispose();
         }
+
+        @Override
+        public void initializeUI() {
+
+        }
     }
 
     private NimGUI gui;
@@ -257,4 +262,3 @@ public class Nim extends Game {
         return true; // Game is over if all heaps are empty
     }
 }
-
