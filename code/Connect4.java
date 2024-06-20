@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
 
-public class Connect4 extends Game {
+public class Connect4 extends Game implements In{
 
     // Constants for game parameters
     private static final int ROWS = 6;
@@ -40,7 +40,7 @@ public class Connect4 extends Game {
     }
 
     // Initialize the GUI
-    private void initializeUI() {
+    public void initializeUI() {
 
         // Create main frame
         frame = new JFrame("Connect 4");
