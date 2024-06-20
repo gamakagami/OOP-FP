@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Random;
 
-public class NumberGame extends Game {
+public class NumberGame extends Game implements In{
 
     // GUI components
     private JFrame frame;
@@ -26,7 +26,7 @@ public class NumberGame extends Game {
     }
 
     // Method to set up the GUI
-    private void initializeUI() {
+    public void initializeUI() {
 
         // Create main frame
         frame = new JFrame("Number Game");
